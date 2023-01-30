@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { View, TextInput, StyleSheet, Dimensions, ViewPropTypes,TextPropTypes } from 'react-native';
+import { View, TextInput, StyleSheet, Dimensions, ViewPropTypes } from 'react-native';
 import _ from 'lodash';
-
+import {TextInputPropTypes} from 'deprecated-react-native-prop-types';
 // if ViewPropTypes is not defined fall back to View.propType (to support RN < 0.44)
 const viewPropTypes = ViewPropTypes || View.propTypes;
+const textInputPropTypes = TextInputPropTypes || TextInput.propTypes;
 
 export default class ConfirmationCodeInput extends Component {
   static propTypes = {
@@ -19,10 +20,9 @@ export default class ConfirmationCodeInput extends Component {
     inactiveColor: PropTypes.string,
     ignoreCase: PropTypes.bool,
     autoFocus: PropTypes.bool,
-    codeInputStyle: TextPropTypes.style,
+    codeInputStyle: textInputPropTypes.style,
     containerStyle: viewPropTypes.style,
     onFulfill: PropTypes.func,
-    onCodeChange: PropTypes.func,
   };
   
   static defaultProps = {
@@ -36,7 +36,7 @@ export default class ConfirmationCodeInput extends Component {
     inactiveColor: 'rgba(255, 255, 255, 0.2)',
     space: 8,
     compareWithCode: '',
-    ignoreCase: false,
+    ignoreCase: false
   };
   
   constructor(props) {
@@ -197,20 +197,13 @@ export default class ConfirmationCodeInput extends Component {
   _onKeyPress(e) {
     if (e.nativeEvent.key === 'Backspace') {
       const { currentIndex } = this.state;
-      let newCodeArr = _.clone(this.state.codeArr);
       const nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
-      for (const i in newCodeArr) {
-        if (i >= nextIndex) {
-          newCodeArr[i] = '';
-        }
-      }
-      this.props.onCodeChange(newCodeArr.join(''))
       this._setFocus(nextIndex);
     }
   }
   
   _onInputCode(character, index) {
-    const { codeLength, onFulfill, compareWithCode, ignoreCase, onCodeChange } = this.props;
+    const { codeLength, onFulfill, compareWithCode, ignoreCase } = this.props;
     let newCodeArr = _.clone(this.state.codeArr);
     newCodeArr[index] = character;
     
@@ -234,7 +227,7 @@ export default class ConfirmationCodeInput extends Component {
         codeArr: newCodeArr,
         currentIndex: prevState.currentIndex + 1
       };
-    }, () => { onCodeChange(newCodeArr.join('')) });
+    });
   }
   
   render() {
